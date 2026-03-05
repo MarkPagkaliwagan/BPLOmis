@@ -16,24 +16,24 @@ export default function SuperAdminDashboard() {
   const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
-  const [token, setToken] = useState<string | null>(null)
 
-  // Check login & fetch token
+  // Get user from localStorage (token in cookie)
+  const storedUser = typeof window !== "undefined" ? localStorage.getItem("user") : null
+  const user = storedUser ? JSON.parse(storedUser) : null
+
   useEffect(() => {
-    const storedToken = localStorage.getItem("token")
-    const storedUser = localStorage.getItem("user")
-    if (!storedToken || !storedUser || JSON.parse(storedUser).role !== "SUPERADMIN") {
-      router.push("/Navsection/login")
+    if (!user || user.role.toUpperCase() !== "SUPERADMIN") {
+      router.replace("/Navsection/login")
       return
     }
-    setToken(storedToken)
-    fetchUsers(storedToken)
+
+    fetchUsers()
   }, [])
 
-  const fetchUsers = async (jwt: string) => {
+  const fetchUsers = async () => {
     try {
       const res = await fetch("/api/superadmin/pending-users", {
-        headers: { Authorization: `Bearer ${jwt}` },
+        credentials: "include", // ✅ include cookie
       })
       const data = await res.json()
       setUsers(data)
@@ -45,19 +45,22 @@ export default function SuperAdminDashboard() {
   }
 
   const approveUser = async (userId: number, role: string) => {
-    if (!token) return
-    await fetch("/api/superadmin/approve-user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ userId, role }),
-    })
-    fetchUsers(token)
+    try {
+      await fetch("/api/superadmin/approve-user", {
+        method: "POST",
+        credentials: "include", // ✅ cookie included
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, role }),
+      })
+      fetchUsers()
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const logout = () => {
-    localStorage.removeItem("token")
     localStorage.removeItem("user")
-    router.push("/Navsection/login")
+    router.replace("/Navsection/login")
   }
 
   if (loading) return <p>Loading...</p>
