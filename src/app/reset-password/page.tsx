@@ -38,7 +38,7 @@ export default function ResetPassword() {
           required
         />
         <button className="w-full bg-black text-white p-2 rounded">
-          Update Password
+          Update Password!
         </button>
       </form>
     </div>
