@@ -46,25 +46,25 @@ export async function POST(req: NextRequest) {
       { expiresIn: "1h" }
     );
 
-    // Create response
+    const userData = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      phone: user.phone,
+      email: user.email,
+      role: user.role,
+    };
+
     const response = NextResponse.json({
       message: "Login successful",
-      token,
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        phone: user.phone,
-        email: user.email,
-        role: user.role,
-      },
+      user: userData,
     });
 
-    // ✅ Set cookie (para makita sa browser cookies)
+    // ✅ Secure cookie
     response.cookies.set("token", token, {
-      httpOnly: true, // mas secure
-      secure: process.env.NODE_ENV === "production", // required sa Vercel
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60, // 1 hour
