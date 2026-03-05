@@ -37,6 +37,7 @@ export default function LoginPage() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
+          credentials: "include", // required para sa cookies
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       })
