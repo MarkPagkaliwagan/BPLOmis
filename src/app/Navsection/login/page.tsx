@@ -24,7 +24,6 @@ export default function LoginPage() {
     }
   }, [])
 
-  // --- Handle login ---
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -37,7 +36,7 @@ export default function LoginPage() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        credentials: "include", // ✅ allow cookies
+        credentials: "include", // include cookie
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       })
@@ -49,14 +48,16 @@ export default function LoginPage() {
         return
       }
 
-      // ✅ Store only user in localStorage (token is in httpOnly cookie)
+      // Store user in localStorage
       localStorage.setItem("user", JSON.stringify(data.user))
 
-      // Redirect based on role
-      const role = data.user.role.toUpperCase()
-      if (role === "SUPERADMIN") router.replace("/superadmin-dashboard")
-      else if (role === "ADMIN") router.replace("/admin-dashboard")
-      else router.replace("/user-dashboard/dashboard")
+      // Small delay to ensure cookie is usable
+      setTimeout(() => {
+        const role = data.user.role.toUpperCase()
+        if (role === "SUPERADMIN") router.replace("/superadmin-dashboard")
+        else if (role === "ADMIN") router.replace("/admin-dashboard")
+        else router.replace("/user-dashboard")
+      }, 100)
 
     } catch (err) {
       console.error(err)
@@ -69,37 +70,22 @@ export default function LoginPage() {
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-transparent px-4">
         <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
-
           {/* LEFT SIDE */}
           <div className="hidden md:flex flex-col justify-center bg-black text-white p-12">
             <h2 className="text-4xl font-bold mb-6">
               Online Appointment System for Government Offices
             </h2>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Our Online Appointment System streamlines scheduling for government offices.
+              Our system streamlines scheduling for government offices.
             </p>
-            <ul className="space-y-4 text-sm text-gray-300">
-              <li>✔ Easy appointment booking</li>
-              <li>✔ Real-time schedule management</li>
-              <li>✔ Automatic notifications</li>
-              <li>✔ Secure record keeping</li>
-            </ul>
           </div>
 
           {/* RIGHT SIDE */}
           <div className="p-8 md:p-12 flex flex-col justify-center">
-
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Sign in to your account
-              </h1>
-              <p className="text-gray-500">
-                Enter your credentials below to continue.
-              </p>
-            </div>
-
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Sign in
+            </h1>
             <form onSubmit={handleLogin} className="space-y-6">
-
               {/* EMAIL */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -142,7 +128,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* ERROR */}
               {error && (
                 <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
                   {error}
@@ -153,12 +138,10 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full bg-black text-white font-semibold py-3 rounded-xl hover:bg-gray-900 transition"
               >
-                Login to Dashboard
+                Login
               </button>
-
             </form>
           </div>
-
         </div>
       </div>
     </>

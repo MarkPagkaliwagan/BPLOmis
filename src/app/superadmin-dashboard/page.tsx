@@ -17,7 +17,6 @@ export default function SuperAdminDashboard() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Get user from localStorage (token in cookie)
   const storedUser = typeof window !== "undefined" ? localStorage.getItem("user") : null
   const user = storedUser ? JSON.parse(storedUser) : null
 
@@ -26,20 +25,18 @@ export default function SuperAdminDashboard() {
       router.replace("/Navsection/login")
       return
     }
-
     fetchUsers()
   }, [])
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/superadmin/pending-users", {
-        credentials: "include", // ✅ include cookie
-      })
+      const res = await fetch("/api/superadmin/pending-users", { credentials: "include" })
+      if (!res.ok) throw new Error("Unauthorized")
       const data = await res.json()
       setUsers(data)
-      setLoading(false)
     } catch (err) {
-      console.error(err)
+      router.replace("/Navsection/login")
+    } finally {
       setLoading(false)
     }
   }
@@ -48,7 +45,7 @@ export default function SuperAdminDashboard() {
     try {
       await fetch("/api/superadmin/approve-user", {
         method: "POST",
-        credentials: "include", // ✅ cookie included
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, role }),
       })
@@ -74,20 +71,18 @@ export default function SuperAdminDashboard() {
 
       {users.length === 0 && <p>No pending users.</p>}
 
-      {users.map((user) => (
-        <div key={user.id} style={{ border: "1px solid gray", padding: 15, marginBottom: 10 }}>
-          <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-
-          <select defaultValue="USER" id={`role-${user.id}`}>
+      {users.map(u => (
+        <div key={u.id} style={{ border: "1px solid gray", padding: 15, marginBottom: 10 }}>
+          <p><strong>Name:</strong> {u.firstName} {u.lastName}</p>
+          <p><strong>Email:</strong> {u.email}</p>
+          <select defaultValue="USER" id={`role-${u.id}`}>
             <option value="USER">USER</option>
             <option value="ADMIN">ADMIN</option>
           </select>
-
           <button
             onClick={() => {
-              const select = document.getElementById(`role-${user.id}`) as HTMLSelectElement
-              approveUser(user.id, select.value)
+              const select = document.getElementById(`role-${u.id}`) as HTMLSelectElement
+              approveUser(u.id, select.value)
             }}
             style={{ marginLeft: 10, background: "black", color: "white", padding: "5px 10px" }}
           >

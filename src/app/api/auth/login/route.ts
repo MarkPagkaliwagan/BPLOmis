@@ -7,9 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "secretkey";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email, password } = body;
-
+    const { email, password } = await req.json();
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return NextResponse.json({ error: "Invalid email or password" }, { status: 400 });
 
@@ -30,18 +28,16 @@ export async function POST(req: NextRequest) {
       role: user.role,
     };
 
-    const response = NextResponse.json({ message: "Login successful", user: userData });
-
-    // ✅ Set cookie (httpOnly) - works localhost & Vercel
-    response.cookies.set("token", token, {
+    const res = NextResponse.json({ message: "Login successful", user: userData });
+    res.cookies.set("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true on Vercel
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60,
     });
 
-    return response;
+    return res;
 
   } catch (err) {
     console.error("Login error:", err);

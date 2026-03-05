@@ -7,9 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "secretkey";
 export function middleware(req: NextRequest) {
   const url = req.nextUrl.pathname;
 
-  // Protect SUPERADMIN routes
   if (url.startsWith("/superadmin-dashboard") || url.startsWith("/api/superadmin")) {
-
     const token = req.cookies.get("token")?.value;
     if (!token) return NextResponse.redirect(new URL("/Navsection/login", req.url));
 
