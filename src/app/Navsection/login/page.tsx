@@ -16,13 +16,11 @@ export default function LoginPage() {
   // --- Auto redirect if already logged in ---
   useEffect(() => {
     const storedUser = localStorage.getItem("user")
-
     if (storedUser) {
-      const role = JSON.parse(storedUser).role
-
-      if (role === "SUPERADMIN") router.push("/superadmin-dashboard")
-      else if (role === "ADMIN") router.push("/admin-dashboard")
-      else router.push("/user-dashboard")
+      const role = JSON.parse(storedUser).role.toUpperCase()
+      if (role === "SUPERADMIN") router.replace("/superadmin-dashboard")
+      else if (role === "ADMIN") router.replace("/admin-dashboard")
+      else router.replace("/user-dashboard")
     }
   }, [])
 
@@ -51,13 +49,14 @@ export default function LoginPage() {
         return
       }
 
-      // ✅ Store only user (token already in cookie)
+      // ✅ Store only user in localStorage (token is in httpOnly cookie)
       localStorage.setItem("user", JSON.stringify(data.user))
 
       // Redirect based on role
-      if (data.user.role === "SUPERADMIN") router.push("/superadmin-dashboard")
-      else if (data.user.role === "ADMIN") router.push("/admin-dashboard")
-      else router.push("/user-dashboard/dashboard")
+      const role = data.user.role.toUpperCase()
+      if (role === "SUPERADMIN") router.replace("/superadmin-dashboard")
+      else if (role === "ADMIN") router.replace("/admin-dashboard")
+      else router.replace("/user-dashboard/dashboard")
 
     } catch (err) {
       console.error(err)
@@ -78,9 +77,7 @@ export default function LoginPage() {
             </h2>
             <p className="text-gray-300 mb-6 leading-relaxed">
               Our Online Appointment System streamlines scheduling for government offices.
-              Citizens can easily book appointments, reduce wait times, and access services efficiently.
             </p>
-
             <ul className="space-y-4 text-sm text-gray-300">
               <li>✔ Easy appointment booking</li>
               <li>✔ Real-time schedule management</li>
@@ -108,10 +105,8 @@ export default function LoginPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Email Address
                 </label>
-
                 <div className="relative">
                   <FiMail className="absolute top-4 left-3 text-gray-400" />
-
                   <input
                     type="email"
                     placeholder="example@email.com"
@@ -128,10 +123,8 @@ export default function LoginPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Password
                 </label>
-
                 <div className="relative">
                   <FiLock className="absolute top-4 left-3 text-gray-400" />
-
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
@@ -140,7 +133,6 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-
                   <div
                     className="absolute top-4 right-3 cursor-pointer text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}

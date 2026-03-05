@@ -10,20 +10,14 @@ export function middleware(req: NextRequest) {
   // Protect SUPERADMIN routes
   if (url.startsWith("/superadmin-dashboard") || url.startsWith("/api/superadmin")) {
 
-    // ✅ Read token from cookie
     const token = req.cookies.get("token")?.value;
-
-    if (!token) {
-      return NextResponse.redirect(new URL("/Navsection/login", req.url));
-    }
+    if (!token) return NextResponse.redirect(new URL("/Navsection/login", req.url));
 
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as { role: string };
-
-      if (decoded.role !== "SUPERADMIN") {
+      if (decoded.role.toUpperCase() !== "SUPERADMIN") {
         return NextResponse.redirect(new URL("/Navsection/login", req.url));
       }
-
     } catch {
       return NextResponse.redirect(new URL("/Navsection/login", req.url));
     }

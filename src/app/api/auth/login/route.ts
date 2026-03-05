@@ -10,41 +10,15 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { email, password } = body;
 
-    // Check if user exists
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return NextResponse.json({ error: "Invalid email or password" }, { status: 400 });
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 400 }
-      );
-    }
-
-    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 400 }
-      );
-    }
+    if (!isMatch) return NextResponse.json({ error: "Invalid email or password" }, { status: 400 });
 
-    // Check if ACTIVE
-    if (user.status !== "ACTIVE") {
-      return NextResponse.json(
-        { error: "Account is pending SUPERADMIN approval." },
-        { status: 403 }
-      );
-    }
+    if (user.status !== "ACTIVE") return NextResponse.json({ error: "Account is pending approval." }, { status: 403 });
 
-    // Generate JWT
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
 
     const userData = {
       id: user.id,
@@ -56,27 +30,21 @@ export async function POST(req: NextRequest) {
       role: user.role,
     };
 
-    const response = NextResponse.json({
-      message: "Login successful",
-      user: userData,
-    });
+    const response = NextResponse.json({ message: "Login successful", user: userData });
 
-    // ✅ Secure cookie
+    // ✅ Set cookie (httpOnly) - works localhost & Vercel
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // true on Vercel
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60,
     });
 
     return response;
 
   } catch (err) {
     console.error("Login error:", err);
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
