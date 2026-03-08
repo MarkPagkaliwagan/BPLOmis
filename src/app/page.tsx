@@ -1,22 +1,19 @@
 "use client"
 
 import { FiMail, FiLock, FiEye } from "react-icons/fi"
-import Navbar from "@/components/Navbar"
 
 export default function LoginPage() {
   return (
-    <>
-      <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-transparent px-4">
         <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
           
           {/* LEFT SIDE */}
           <div className="hidden md:flex flex-col justify-center bg-black text-white p-12">
             <h2 className="text-4xl font-bold mb-6">
-              Online Appointment System for Government Offices
+              BPLO
             </h2>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Our system streamlines scheduling for government offices.
+              Inspection Management System
             </p>
           </div>
 
@@ -73,6 +70,6 @@ export default function LoginPage() {
 
         </div>
       </div>
-    </>
+    
   )
 }
