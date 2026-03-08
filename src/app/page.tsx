@@ -1,60 +1,78 @@
 "use client"
 
-import Link from "next/link"
-import { FiArrowRight, FiUsers, FiShield, FiTrendingUp } from "react-icons/fi"
+import { FiMail, FiLock, FiEye } from "react-icons/fi"
 import Navbar from "@/components/Navbar"
 
-export default function HomePage() {
+export default function LoginPage() {
   return (
-
     <>
       <Navbar />
-
-    <main className="w-full">
-
-      {/* ================= HERO SECTION ================= */}
-      <section className="relative bg-linear-to-b from-white to-gray-50">
-        <div className="max-w-7xl mx-auto px-6 py-20 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
-
-          {/* Left Content */}
-          <div className="space-y-6 text-center lg:text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-4xl font-bold leading-tight text-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-transparent px-4">
+        <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+          
+          {/* LEFT SIDE */}
+          <div className="hidden md:flex flex-col justify-center bg-black text-white p-12">
+            <h2 className="text-4xl font-bold mb-6">
               Online Appointment System for Government Offices
+            </h2>
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              Our system streamlines scheduling for government offices.
+            </p>
+          </div>
+
+          {/* RIGHT SIDE */}
+          <div className="p-8 md:p-12 flex flex-col justify-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Sign in
             </h1>
 
-            <p className="text-gray-600 text-lg max-w-xl mx-auto lg:mx-0">
-             Our Online Appointment System for Government Offices allows citizens to conveniently book and manage appointments online, 
-             reducing waiting times and streamlining access to essential services. With an easy-to-use interface, you can schedule your visit, 
-             receive confirmations, and stay updated, making government transactions faster and more efficient.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link
-                href="/Navsection/login"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition duration-300"
-              >
-                Get Started
-                <FiArrowRight />
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Content (Visual Box Placeholder) */}
-          <div className="relative">
-            <div className="bg-white shadow-xl rounded-2xl p-8 border border-gray-100">
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-32 bg-gray-100 rounded-xl mt-6"></div>
+            <form className="space-y-6">
+              
+              {/* EMAIL */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <FiMail className="absolute top-4 left-3 text-gray-400" />
+                  <input
+                    type="email"
+                    placeholder="example@email.com"
+                    className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
+                  />
+                </div>
               </div>
-            </div>
+
+              {/* PASSWORD */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <FiLock className="absolute top-4 left-3 text-gray-400" />
+                  <input
+                    type="password"
+                    placeholder="Enter your password"
+                    className="pl-10 pr-10 py-3 w-full border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
+                  />
+                  <div className="absolute top-4 right-3 text-gray-500">
+                    <FiEye />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="w-full bg-black text-white font-semibold py-3 rounded-xl hover:bg-gray-900 transition"
+              >
+                Login
+              </button>
+
+            </form>
           </div>
+
         </div>
-      </section>
-
-
-    </main>
+      </div>
     </>
   )
 }
